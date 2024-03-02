@@ -41,10 +41,5 @@ export default defineComponent({
 
 
 <style lang="scss" scoped>
-#container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-auto-rows: 10px;
-  gap: 20px;
-}
+
 </style>

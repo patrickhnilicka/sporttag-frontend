@@ -115,38 +115,5 @@ export default defineComponent({
 </template>
 
 <style lang="scss" scoped>
-.container {
-  display: grid;
-  column-gap: 50px;
-  //grid-template-columns: 1fr 2fr;
-}
 
-#studentlist {
-  grid-row-start: 1;
-  grid-row-end: 3;
-}
-
-#student {
-  grid-column: 2;
-  grid-row-start: 1;
-  grid-row-end: 3;
-}
-
-button {
-  margin-top: 25px;
-  margin-bottom: 30px;
-
-  a {
-    font-weight: bold;
-    font-size: inherit;
-    color: #2c3e50;
-  }
-}
-
-#eingabefelder {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-auto-rows: 10px;
-  gap: 20px;
-}
 </style>

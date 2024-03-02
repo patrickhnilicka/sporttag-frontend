@@ -61,17 +61,4 @@ export default defineComponent({
 
 
 <style lang="scss" scoped>
-#container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  grid-auto-rows: minmax(100px, auto);
-}
-
-label {
-  text-align: right;
-}
-.buttons button{
-margin-left: 20px;
-}
 </style>
