@@ -1,36 +1,11 @@
 <template>
-    <nav class="navbar container" role="navigation" aria-label="main navigation">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-          <strong class="is-size-4">Animal Rescue League</strong>
-        </a>
-        <a
-          role="button"
-          class="navbar-burger burger"
-          aria-label="menu"
-          aria-expanded="false"
-          data-target="navbarBasicExample"
-        >
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-        </a>
-      </div>
+    <nav class="navbar container">
       <div id="navbar" class="navbar-menu">
-        <div class="navbar-start">
-          <router-link to="/" class="navbar-item">Home</router-link>
-          <router-link to="/students" class="navbar-item">Personen</router-link>
-          <router-link to="/about" class="navbar-item">About</router-link>
-        </div>
-        <div class="navbar-end">
-          <div class="navbar-item">
-            <div class="buttons">
-              <a class="button is-dark">
-                <strong>Sign In</strong>
-              </a>
-            </div>
-          </div>
-        </div>
+       <ul>
+          <li><router-link to="/" class="navbar-item">Home</router-link></li>
+          <li><router-link to="/students" class="navbar-item">Personen</router-link></li>
+        <li><router-link to="/about" class="navbar-item">About</router-link></li>
+       </ul>
       </div>
     </nav>
   </template>
@@ -41,15 +16,22 @@
     });
   </script>
   <style lang="scss" scoped>
-    nav {
-      margin-top: 25px;
-      margin-bottom: 30px;
-      a {
-        font-weight: bold;
-        color: #2c3e50;
-        &.router-link-exact-active {
-          color: #d88d00;
-        }
-      }
-    }
+  ul{
+    margin: 30px 0 0 0;
+    padding: 0;
+  }
+  li {
+    list-style-type: none;
+    margin: 0;
+    border-bottom: 1px solid;
+    background-color: #444444;
+  }
+  .selected {
+    background-color: white;
+    color: black;
+  }
+  li a {
+    color: white;
+    display: block;
+  }
   </style>
