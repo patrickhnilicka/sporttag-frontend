@@ -1,5 +1,4 @@
 <script lang="ts">
-import StudentShow from '../components/StudentShow.vue';
 import StudentEdit from '../components/StudentEdit.vue';
 import { defineComponent } from 'vue';
 import type Student from './../types/Student';
@@ -7,14 +6,13 @@ const url = "http://127.0.0.1:8080";
 export default defineComponent({
   name: 'StudentsView',
   components: {
-    StudentShow,
     StudentEdit
   },
   data() {
     return {
       students: [] as Student[],
       prefix: '',
-      student: { id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date() } as Student,
+      student: { id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '',  sportklassenId: 0, sportlehrerKuerzel: ''} as Student,
       isEdit: false
     }
   },
@@ -30,6 +28,9 @@ export default defineComponent({
   watch: {
     student(student) {
       console.log(student)
+    },
+    students(student) {
+      console.log(student)
     }
   },
   methods: {
@@ -37,6 +38,7 @@ export default defineComponent({
       try {
         let response = await fetch(url + "/student")
         this.students = await response.json()
+        console.log(this.students)
       } catch (error) {
         console.log(error)
       }
@@ -51,17 +53,19 @@ export default defineComponent({
             // 'Content-Type': 'application/x-www-form-urlencoded',
           },
         })
+        this.getStudents()
       }
       catch (error) {
         console.log(error)
       }
-      this.student = student
     },
     create() {
-      this.student = { id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date() }
+      this.student = { id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '', sportklassenId: 0, sportlehrerKuerzel: '' }
       this.isEdit = true
     },
-    edit() {
+    edit(student: Student) {
+      console.log("edit")
+      this.student = student
       this.isEdit = true
     },
     async del(id: Number) {
@@ -74,9 +78,6 @@ export default defineComponent({
         console.log(error)
       }
       this.getStudents()
-    },
-    hasValidInput() {
-      return this.student.vorname.trim() && this.student.nachname.trim()
     },
     updateStudent(uStudent: Student) {
       console.log("Update Student:")
@@ -98,7 +99,7 @@ export default defineComponent({
   <div class="container">
     <div id="studentlist">
       <div>
-        <input v-model="prefix" placeholder="Vor- oder Nachnamen filtern" :disabled="isEdit">
+        <input v-model="prefix" placeholder="Vor- oder Nachnamen filtern" :disabled="isEdit"/>
       </div>
       <div>
         <table width="100%">
@@ -115,8 +116,8 @@ export default defineComponent({
             <td>{{ s.nachname }}</td>
             <td>{{ s.geschlecht }}</td>
             <td>{{ s.geburtsdatum }}</td>
-            <td>Sportklasse</td>
-            <td><span class="material-symbols-outlined">edit</span><button @click="del(s.id)" v-if="!isEdit"><span class="material-symbols-outlined">delete</span></button></td>
+            <td>{{ s.sportklasse }}</td>
+            <td><button @click="edit(s)" class="material-symbols-outlined">edit</button><button @click="del(s.id)" v-if="!isEdit"><span class="material-symbols-outlined">delete</span></button></td>
           </tr>
         </table>
       </div>
@@ -126,15 +127,12 @@ export default defineComponent({
         </select>
       </div-->
     </div>
-    <div id="student">
-      <StudentShow v-if="!isEdit" :student="student" @edit="edit" />
-      <StudentEdit v-else :student="student" @save-student="updateStudent" @abort-edit="abortEdit" />
-      <div class="buttons">
-        <button @click="create" v-if="!isEdit">New</button>
-        <!--button @click="del({{ s.id }})" v-if="!isEdit">Delete</button-->
-      </div>
-    </div>
   </div>
+<!-- Edit Modal-->
+  <Teleport to="body">
+    <!-- use the modal component, pass in the prop -->
+    <StudentEdit :show="isEdit" :student="student" @abort-edit="isEdit = false" @save-student="saveStudent"/>
+  </Teleport>
 </template>
 
 <style lang="scss" scoped>
