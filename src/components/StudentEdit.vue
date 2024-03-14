@@ -1,59 +1,55 @@
-<script lang="ts">
-import type Student from '@/types/Student'
-import { defineComponent } from 'vue'
-import type { PropType } from 'vue'
-export default defineComponent({
-  props: {
-    student: Object as PropType<Student>,
-    show: Boolean
+<script setup lang="ts">
+import type Student from '@/types/Student';
+import { withDefaults, ref, watch, toRaw} from 'vue'
+
+export interface Props {
+  student?: Student,
+  show?: boolean
+}
+
+/*const props = withDefaults(defineProps<Props>(), {
+  student: () => { // has to be defined by factory function
+    return {id: undefined,
+    vorname: '',
+    nachname: '',
+    geschlecht: '',
+    geburtsdatum: undefined,
+    klasse: '',
+    sportklasse: '',
+    sportklassenId: undefined,
+    sportlehrerKuerzel: ''}
   },
-  emits: {
-    // Validate submit event
-    saveStudent: (student: Student) => {
+  show: true
+})*/
+const props = defineProps<Props>()
+
+const emit = defineEmits({
+  saveStudent: (student: Student) => {
       if (!student.vorname || !student.nachname) {
         return false
       }
       return true
     },
-    abortEdit: null,
-    updateStudent: null
-  },
-  data() {
-    return {
-      id: -1 as Number,
-      vorname: '',
-      nachname: '',
-      geschlecht: '',
-      geburtsdatum: new Date(),
-      klasse: ''
-    }
-  },
-  watch: {
-    student(student: Student) {
-      this.id = student.id
-      this.vorname = student.vorname
-      this.nachname = student.nachname
-      this.geschlecht = student.geschlecht
-      this.geburtsdatum = student.geburtsdatum
-      this.klasse = student.klasse
-      console.log(student.geschlecht)
-    }
-  },
-
-  methods: {
-    logstudent() {
-      console.log("Studentlocal:" + this.nachname)
-    },
-    handleSave() {
-      console.log("Updating..")
-      this.$emit("saveStudent", { id: this.id, vorname: this.vorname, nachname: this.nachname, geschlecht: this.geschlecht, geburtsdatum: this.geburtsdatum, klasse: this.klasse } as Student)
-      this.$emit("abortEdit")
-    }
-  },
-  mounted() {
-
-  }
+  abortEdit: null,
+  updateStudent: null
 })
+
+//data 
+const studentEdit = ref(props.student)
+
+//watchers
+watch(props, 
+() => {studentEdit.value = structuredClone(toRaw(props.student))})
+//methods
+function logstudent() {
+      console.log("Studentlocal:" +studentEdit.value)
+    }
+
+function handleSave() {
+      console.log("Updating..")
+      emit("saveStudent", studentEdit.value)
+      emit("abortEdit")
+    }
 </script>
 
 <template>
@@ -68,13 +64,13 @@ export default defineComponent({
       </div>
       <div class="modal-body">
         <div>
-        <label>Vorname: <input v-model="vorname"></label>
-        <label>Nachname: <input v-model="nachname"></label>
-        <label>Geburtstag: <input v-model="geburtsdatum"></label>
-        <label>Geschlecht: <select v-model="geschlecht">
+        <label>Vorname: <input v-model="studentEdit.vorname"></label>
+        <label>Nachname: <input v-model="studentEdit.nachname"></label>
+        <label>Geburtstag: <input v-model="studentEdit.geburtsdatum"></label>
+        <label>Geschlecht: <select v-model="studentEdit.geschlecht">
             <option disabled value="">Bitte wählen</option>
             <option>m</option>
-            <option>f</option>
+            <option>w</option>
             <option>a</option>
           </select></label>
       </div>

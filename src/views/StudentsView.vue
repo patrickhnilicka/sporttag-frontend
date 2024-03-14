@@ -4,93 +4,99 @@ import StudentEdit from '../components/StudentEdit.vue';
 import { computed, ref, watch, onBeforeMount, type Ref } from 'vue'
 const url = "http://127.0.0.1:8080";
 
-const students: Ref<Student[]> = ref([{ id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '',  sportklassenId: 0, sportlehrerKuerzel: ''}])
+// data
+const students: Ref<Student[]> = ref([{ id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '', sportklassenId: 0, sportlehrerKuerzel: '' }])
 const prefix = ref('')
-const student: Ref<Student> = ref({ id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '',  sportklassenId: 0, sportlehrerKuerzel: ''})
+const student: Ref<Student> = ref({ id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '', sportklassenId: 0, sportlehrerKuerzel: '' })
 const isEdit = ref(false)
 
-onBeforeMount(()=> {
-    getStudents();
-  })
 
+// computed
+const filteredStudents = computed(() => {
+  return students.value.filter((n: Student) => { return n.nachname.toLowerCase().startsWith(prefix.value.toLowerCase()) || n.vorname.toLowerCase().startsWith(prefix.value.toLowerCase()) })
+})
+
+//lifecycle hooks
+onBeforeMount(() => {
+  getStudents();
+})
+
+//watchers
 watch(student,
   () => console.log(student)
 )
 
-const filteredStudents = computed(() => {
-      return students.value.filter((n: Student) => { return n.nachname.toLowerCase().startsWith(prefix.value.toLowerCase()) || n.vorname.toLowerCase().startsWith(prefix.value.toLowerCase())})
+//methods
+async function getStudents() {
+  try {
+    let response = await fetch(url + "/student")
+    students.value = await response.json()
+    console.log(students)
+  } catch (error) {
+    console.log(error)
+  }
+}
+async function saveStudent(student: Student) {
+  try {
+    await fetch(url + "/student", {
+      method: "POST",
+      body: JSON.stringify(student),
+      headers: {
+        "Content-Type": "application/json",
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
     })
+    getStudents()
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
 
-    async function getStudents() {
-      try {
-        let response = await fetch(url + "/student")
-        students.value = await response.json()
-        console.log(students)
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    async function saveStudent(student: Student) {
-      try {
-        await fetch(url + "/student", {
-          method: "POST",
-          body: JSON.stringify(student),
-          headers: {
-            "Content-Type": "application/json",
-            // 'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        })
-        getStudents()
-      }
-      catch (error) {
-        console.log(error)
-      }
-    }
+function create() {
+  student.value = { id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '', sportklassenId: 0, sportlehrerKuerzel: '' }
+  isEdit.value = true
+}
 
-    function create() {
-      student.value = { id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '', sportklassenId: 0, sportlehrerKuerzel: '' }
-      isEdit.value = true
-    }
+function edit(newStudent: Student) {
+  console.log("edit")
+  student.value = newStudent
+  isEdit.value = true
+}
 
-  function edit(newStudent: Student) {
-      console.log("edit")
-      student.value = newStudent
-      isEdit.value = true
-    }
-    
-  async function del(id: Number) {
-      try {
-        await fetch(url + "/student/" + id, {
-          method: "DELETE",
-        })
-      }
-      catch (error) {
-        console.log(error)
-      }
-      getStudents()
-    }
+async function del(id: Number) {
+  try {
+    await fetch(url + "/student/" + id, {
+      method: "DELETE",
+    })
+  }
+  catch (error) {
+    console.log(error)
+  }
+  getStudents()
+}
 
-  function updateStudent(uStudent: Student) {
-      console.log("Update Student:")
-      console.log(uStudent)
-      saveStudent(uStudent)
-      isEdit.value = false
-    }
+function updateStudent(uStudent: Student) {
+  console.log("Update Student:")
+  console.log(uStudent)
+  saveStudent(uStudent)
+  isEdit.value = false
+}
 
-  function abortEdit() {
-      isEdit.value = false
-    }
-  
-  function getDisplayName(student: Student) {
-      return student.vorname + ' ' + student.nachname
-    }
-  </script>
+function abortEdit() {
+  isEdit.value = false
+}
+
+function getDisplayName(student: Student) {
+  return student.vorname + ' ' + student.nachname
+}
+</script>
 
 <template>
   <div class="container">
     <div id="studentlist">
       <div>
-        <input v-model="prefix" placeholder="Vor- oder Nachnamen filtern" :disabled="isEdit"/>
+        <input v-model="prefix" placeholder="Vor- oder Nachnamen filtern" :disabled="isEdit" />
       </div>
       <div>
         <table class="table">
@@ -108,7 +114,9 @@ const filteredStudents = computed(() => {
             <td>{{ s.geschlecht }}</td>
             <td>{{ s.geburtsdatum }}</td>
             <td>{{ s.sportklasse }}</td>
-            <td><button @click="edit(s)" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#studentEditModal">Bearbeiten</button><button type="button" class="btn btn-danger" @click="del(s.id)">Löschen</button></td>
+            <td><button @click="edit(s)" type="button" class="btn btn-primary" data-bs-toggle="modal"
+                data-bs-target="#studentEditModal">Bearbeiten</button><button type="button" class="btn btn-danger"
+                @click="del(s.id)">Löschen</button></td>
           </tr>
         </table>
       </div>
@@ -120,8 +128,7 @@ const filteredStudents = computed(() => {
     </div>
   </div>
 
-  <StudentEdit :show="isEdit" :student="student" @abort-edit="isEdit = false" @save-student="saveStudent"/>
+  <StudentEdit :show="isEdit" :student="student" @abort-edit="isEdit = false" @save-student="saveStudent" />
 </template>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

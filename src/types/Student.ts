@@ -1,11 +1,11 @@
 export default interface Student {
-    id: Number;
+    id?: number;
     vorname: string;
     nachname: string;
     geschlecht: string;
-    geburtsdatum: Date;
+    geburtsdatum?: Date;
     klasse: string;
     sportklasse: string;
-    sportklassenId: number;
+    sportklassenId?: number;
     sportlehrerKuerzel: string;
 }
