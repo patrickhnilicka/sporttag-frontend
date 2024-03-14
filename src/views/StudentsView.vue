@@ -1,49 +1,36 @@
-<script lang="ts">
+<script setup lang="ts">
+import type Student from '@/types/Student';
 import StudentEdit from '../components/StudentEdit.vue';
-import { defineComponent } from 'vue';
-import type Student from './../types/Student';
+import { computed, ref, watch, onBeforeMount, type Ref } from 'vue'
 const url = "http://127.0.0.1:8080";
-export default defineComponent({
-  name: 'StudentsView',
-  components: {
-    StudentEdit
-  },
-  data() {
-    return {
-      students: [] as Student[],
-      prefix: '',
-      student: { id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '',  sportklassenId: 0, sportlehrerKuerzel: ''} as Student,
-      isEdit: false
-    }
-  },
-  beforeMount() {
-    this.getStudents();
-  },
-  computed: {
-    filteredStudents() {
-      return this.students.filter((n) => { return n.nachname.toLowerCase().startsWith(this.prefix.toLowerCase()) || n.vorname.toLowerCase().startsWith(this.prefix.toLowerCase()) }
-      )
-    }
-  },
-  watch: {
-    student(student) {
-      console.log(student)
-    },
-    students(student) {
-      console.log(student)
-    }
-  },
-  methods: {
-    async getStudents() {
+
+const students: Ref<Student[]> = ref([{ id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '',  sportklassenId: 0, sportlehrerKuerzel: ''}])
+const prefix = ref('')
+const student: Ref<Student> = ref({ id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '',  sportklassenId: 0, sportlehrerKuerzel: ''})
+const isEdit = ref(false)
+
+onBeforeMount(()=> {
+    getStudents();
+  })
+
+watch(student,
+  () => console.log(student)
+)
+
+const filteredStudents = computed(() => {
+      return students.value.filter((n: Student) => { return n.nachname.toLowerCase().startsWith(prefix.value.toLowerCase()) || n.vorname.toLowerCase().startsWith(prefix.value.toLowerCase())})
+    })
+
+    async function getStudents() {
       try {
         let response = await fetch(url + "/student")
-        this.students = await response.json()
-        console.log(this.students)
+        students.value = await response.json()
+        console.log(students)
       } catch (error) {
         console.log(error)
       }
-    },
-    async saveStudent(student: Student) {
+    }
+    async function saveStudent(student: Student) {
       try {
         await fetch(url + "/student", {
           method: "POST",
@@ -53,22 +40,25 @@ export default defineComponent({
             // 'Content-Type': 'application/x-www-form-urlencoded',
           },
         })
-        this.getStudents()
+        getStudents()
       }
       catch (error) {
         console.log(error)
       }
-    },
-    create() {
-      this.student = { id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '', sportklassenId: 0, sportlehrerKuerzel: '' }
-      this.isEdit = true
-    },
-    edit(student: Student) {
+    }
+
+    function create() {
+      student.value = { id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '', sportklassenId: 0, sportlehrerKuerzel: '' }
+      isEdit.value = true
+    }
+
+  function edit(newStudent: Student) {
       console.log("edit")
-      this.student = student
-      this.isEdit = true
-    },
-    async del(id: Number) {
+      student.value = newStudent
+      isEdit.value = true
+    }
+    
+  async function del(id: Number) {
       try {
         await fetch(url + "/student/" + id, {
           method: "DELETE",
@@ -77,23 +67,24 @@ export default defineComponent({
       catch (error) {
         console.log(error)
       }
-      this.getStudents()
-    },
-    updateStudent(uStudent: Student) {
+      getStudents()
+    }
+
+  function updateStudent(uStudent: Student) {
       console.log("Update Student:")
       console.log(uStudent)
-      this.saveStudent(uStudent)
-      this.isEdit = false
-    },
-    abortEdit() {
-      this.isEdit = false
-    },
-    getDisplayName(student: Student) {
+      saveStudent(uStudent)
+      isEdit.value = false
+    }
+
+  function abortEdit() {
+      isEdit.value = false
+    }
+  
+  function getDisplayName(student: Student) {
       return student.vorname + ' ' + student.nachname
     }
-  }
-})
-</script>
+  </script>
 
 <template>
   <div class="container">
