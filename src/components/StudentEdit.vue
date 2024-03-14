@@ -57,9 +57,17 @@ export default defineComponent({
 </script>
 
 <template>
-  <div v-if="show" class="modal-mask">
-    <div class="modal">
-      <div class="modal-container">
+
+<!-- Modal -->
+<div class="modal fade" id="studentEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Schüler bearbeiten</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div>
         <label>Vorname: <input v-model="vorname"></label>
         <label>Nachname: <input v-model="nachname"></label>
         <label>Geburtstag: <input v-model="geburtsdatum"></label>
@@ -69,13 +77,17 @@ export default defineComponent({
             <option>f</option>
             <option>a</option>
           </select></label>
-        <div class="buttons">
-          <button @click="handleSave">Speichern</button>
-          <button @click="$emit('abortEdit')">Abbrechen</button>
-        </div>
+      </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="handleSave">Save changes</button>
       </div>
     </div>
   </div>
+</div>
+
+  
 </template>
 
 

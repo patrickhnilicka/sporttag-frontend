@@ -102,8 +102,8 @@ export default defineComponent({
         <input v-model="prefix" placeholder="Vor- oder Nachnamen filtern" :disabled="isEdit"/>
       </div>
       <div>
-        <table width="100%">
-          <tr align="left">
+        <table class="table">
+          <tr>
             <th>Vorname</th>
             <th>Nachname</th>
             <th>Geschlecht</th>
@@ -117,7 +117,7 @@ export default defineComponent({
             <td>{{ s.geschlecht }}</td>
             <td>{{ s.geburtsdatum }}</td>
             <td>{{ s.sportklasse }}</td>
-            <td><button @click="edit(s)" class="material-symbols-outlined">edit</button><button @click="del(s.id)" v-if="!isEdit"><span class="material-symbols-outlined">delete</span></button></td>
+            <td><button @click="edit(s)" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#studentEditModal">Bearbeiten</button><button type="button" class="btn btn-danger" @click="del(s.id)">Löschen</button></td>
           </tr>
         </table>
       </div>
@@ -128,18 +128,9 @@ export default defineComponent({
       </div-->
     </div>
   </div>
-<!-- Edit Modal-->
-  <Teleport to="body">
-    <!-- use the modal component, pass in the prop -->
-    <StudentEdit :show="isEdit" :student="student" @abort-edit="isEdit = false" @save-student="saveStudent"/>
-  </Teleport>
+
+  <StudentEdit :show="isEdit" :student="student" @abort-edit="isEdit = false" @save-student="saveStudent"/>
 </template>
 
 <style lang="scss" scoped>
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0');
-tr:nth-child(even) {background-color: #f2f2f2;}
-th {
-  background-color: rgb(35 158 221);
-  color: white;
-}
 </style>
