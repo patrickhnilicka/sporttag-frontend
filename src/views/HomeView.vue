@@ -1,10 +1,5 @@
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-  export default defineComponent({
-    name: 'HomeView',
-    components: {},
-  });
+<script setup lang="ts">
 </script>
 <template>
   <div class="container py-4 px-3 mx-auto">
