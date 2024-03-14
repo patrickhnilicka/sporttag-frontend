@@ -8,7 +8,6 @@ const url = "http://127.0.0.1:8080";
 const students: Ref<Student[]> = ref([{ id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '', sportklassenId: 0, sportlehrerKuerzel: '' }])
 const prefix = ref('')
 const student: Ref<Student> = ref({ id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '', sportklassenId: 0, sportlehrerKuerzel: '' })
-const isEdit = ref(false)
 
 
 // computed
@@ -55,13 +54,11 @@ async function saveStudent(student: Student) {
 
 function create() {
   student.value = { id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '', sportklassenId: 0, sportlehrerKuerzel: '' }
-  isEdit.value = true
 }
 
-function edit(newStudent: Student) {
+function edit(studentEdit: Student) {
   console.log("edit")
-  student.value = newStudent
-  isEdit.value = true
+  student.value = studentEdit
 }
 
 async function del(id: Number) {
@@ -80,11 +77,6 @@ function updateStudent(uStudent: Student) {
   console.log("Update Student:")
   console.log(uStudent)
   saveStudent(uStudent)
-  isEdit.value = false
-}
-
-function abortEdit() {
-  isEdit.value = false
 }
 
 function getDisplayName(student: Student) {
@@ -96,7 +88,7 @@ function getDisplayName(student: Student) {
   <div class="container">
     <div id="studentlist">
       <div>
-        <input v-model="prefix" placeholder="Vor- oder Nachnamen filtern" :disabled="isEdit" />
+        <input v-model="prefix" placeholder="Vor- oder Nachnamen filtern" />
       </div>
       <div>
         <table class="table">
@@ -120,15 +112,10 @@ function getDisplayName(student: Student) {
           </tr>
         </table>
       </div>
-      <!--div>
-        <select size="5" v-model="student" :disabled="isEdit">
-          <option v-for="student in filteredStudents" :key="student.id.toString" :value="student">{{ getDisplayName(student) }}</option>
-        </select>
-      </div-->
     </div>
   </div>
 
-  <StudentEdit :show="isEdit" :student="student" @abort-edit="isEdit = false" @save-student="saveStudent" />
+  <StudentEdit :student="student" @save-student="saveStudent" />
 </template>
 
 <style lang="scss" scoped></style>
