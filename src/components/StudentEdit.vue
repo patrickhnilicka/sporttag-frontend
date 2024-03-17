@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import type Sportklasse from '@/types/Sportklasse';
 import type Student from '@/types/Student';
 import { withDefaults, ref, watch, toRaw} from 'vue'
 
 export interface Props {
   student?: Student,
-  show?: boolean
+  show?: boolean,
+  sportklassen?: Sportklasse[]
 }
 
 /*const props = withDefaults(defineProps<Props>(), {
@@ -66,12 +68,15 @@ function handleSave() {
         <div>
         <label>Vorname: <input v-model="studentEdit.vorname"></label>
         <label>Nachname: <input v-model="studentEdit.nachname"></label>
-        <label>Geburtstag: <input v-model="studentEdit.geburtsdatum"></label>
+        <label>Geburtstag: <input type="date" v-model="studentEdit.geburtsdatum"></label>
         <label>Geschlecht: <select v-model="studentEdit.geschlecht">
             <option disabled value="">Bitte wählen</option>
             <option>m</option>
             <option>w</option>
             <option>a</option>
+          </select></label>
+          <label>Sportklasse: <select v-model="studentEdit.sportklasse">
+            <option v-for="s in props.sportklassen" v-bind:key="s.id" :value="s.klassenname">{{ s.klassenname }}</option>
           </select></label>
       </div>
       </div>

@@ -1,18 +1,14 @@
-<script lang="ts">
+<script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import NavView from './views/partials/NavView.vue';
-import { defineComponent } from 'vue'
-  export default defineComponent({
-    name: 'app',
-    components: {
-    NavView
-},
-  });
+import { useSporttagStore } from './stores/sporttag';
+
+const sporttag = useSporttagStore()
 </script>
 
 <template>
   <!--div id="app"-->
-    <header><div id="header">Sporttag</div></header>
+    <header><div id="header">{{sporttag.sporttag?.bezeichnung}}</div></header>
     <NavView />
     <div id="content"><router-view/></div>
     <footer><div id="footer">footer</div></footer>

@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import type Student from '@/types/Student';
 import StudentEdit from '../components/StudentEdit.vue';
-import { computed, ref, watch, onBeforeMount, type Ref } from 'vue'
-const url = "http://127.0.0.1:8080";
+import { computed, ref, watch, onMounted, type Ref , inject} from 'vue'
+import { useSporttagStore } from '@/stores/sporttag';
+import type Sportklasse from "@/types/Sportklasse";
+
+const url = inject('backendurl');
 
 // data
-const students: Ref<Student[]> = ref([{ id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '', sportklassenId: 0, sportlehrerKuerzel: '' }])
+const students: Ref<Student[]> = ref([])
 const prefix = ref('')
 const student: Ref<Student> = ref({ id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '', sportklassenId: 0, sportlehrerKuerzel: '' })
+const store = useSporttagStore()
+const sportklassen: Ref<Sportklasse[]> = ref([])
 
 
 // computed
@@ -16,25 +21,38 @@ const filteredStudents = computed(() => {
 })
 
 //lifecycle hooks
-onBeforeMount(() => {
-  getStudents();
+onMounted(() => {
+  store.loadSporttag()
+  ?.then(s => getStudents())
 })
-
-//watchers
-watch(student,
-  () => console.log(student)
-)
 
 //methods
 async function getStudents() {
   try {
-    let response = await fetch(url + "/student")
-    students.value = await response.json()
+    const sporttagid = store.sporttag?.id
+    console.log("getStudents():" + store.sporttag.bezeichnung)
+    const fetchurl = url + "/students/" + sporttagid 
+    let response = await fetch(fetchurl)
+    let student = await response.json()
+    students.value = student
     console.log(students)
   } catch (error) {
     console.log(error)
   }
 }
+
+async function getSportklassen(){
+  try {
+    const sporttagid = store.sporttag?.id
+    const fetchurl = url + "/sportklassen/" + sporttagid 
+    let response = await fetch(fetchurl)
+    sportklassen.value = await response.json()
+    console.log(students)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 async function saveStudent(student: Student) {
   try {
     await fetch(url + "/student", {
@@ -58,6 +76,7 @@ function create() {
 
 function edit(studentEdit: Student) {
   console.log("edit")
+  getSportklassen()
   student.value = studentEdit
 }
 
@@ -104,7 +123,7 @@ function getDisplayName(student: Student) {
             <td>{{ s.vorname }}</td>
             <td>{{ s.nachname }}</td>
             <td>{{ s.geschlecht }}</td>
-            <td>{{ s.geburtsdatum }}</td>
+            <td type="date">{{ s.geburtsdatum }}</td>
             <td>{{ s.sportklasse }}</td>
             <td><button @click="edit(s)" type="button" class="btn btn-primary" data-bs-toggle="modal"
                 data-bs-target="#studentEditModal">Bearbeiten</button><button type="button" class="btn btn-danger"
@@ -115,7 +134,7 @@ function getDisplayName(student: Student) {
     </div>
   </div>
 
-  <StudentEdit :student="student" @save-student="saveStudent" />
+  <StudentEdit :student="student" :sportklassen="sportklassen" @save-student="saveStudent" />
 </template>
 
 <style lang="scss" scoped></style>

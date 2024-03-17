@@ -4,6 +4,7 @@
        <ul>
           <li><router-link to="/" class="navbar-item">Home</router-link></li>
           <li><router-link to="/students" class="navbar-item">Personen</router-link></li>
+          <li><router-link to="/settings" class="navbar-item">Einstellungen</router-link></li>
         <li><router-link to="/about" class="navbar-item">About</router-link></li>
        </ul>
       </div>
