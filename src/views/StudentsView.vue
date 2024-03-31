@@ -4,6 +4,8 @@ import StudentEdit from '../components/StudentEdit.vue';
 import { computed, ref, watch, onMounted, type Ref , inject} from 'vue'
 import { useSporttagStore } from '@/stores/sporttag';
 import type Sportklasse from "@/types/Sportklasse";
+import { storeToRefs } from 'pinia'
+import { datereviver, formatDate } from '@/js/utils'
 
 const url = inject('backendurl');
 
@@ -11,9 +13,11 @@ const url = inject('backendurl');
 const students: Ref<Student[]> = ref([])
 const prefix = ref('')
 const student: Ref<Student> = ref({ id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '', sportklassenId: 0, sportlehrerKuerzel: '' })
-const store = useSporttagStore()
+const { sporttag } = storeToRefs(useSporttagStore())
 const sportklassen: Ref<Sportklasse[]> = ref([])
 
+// watchers
+watch(sporttag, () => {getStudents()})
 
 // computed
 const filteredStudents = computed(() => {
@@ -22,20 +26,22 @@ const filteredStudents = computed(() => {
 
 //lifecycle hooks
 onMounted(() => {
-  store.loadSporttag()
-  ?.then(s => getStudents())
+  getStudents()
 })
 
 //methods
 async function getStudents() {
+  if(sporttag.value.id == undefined) {
+      return
+    }
   try {
-    const sporttagid = store.sporttag?.id
-    console.log("getStudents():" + store.sporttag.bezeichnung)
+    const sporttagid = sporttag.value.id
+    console.log("getStudents():" + sporttag.value.bezeichnung)
     const fetchurl = url + "/students/" + sporttagid 
     let response = await fetch(fetchurl)
-    let student = await response.json()
-    students.value = student
-    console.log(students)
+    let newstudents = await response.json()
+    students.value = newstudents
+    console.log(newstudents)
   } catch (error) {
     console.log(error)
   }
@@ -43,7 +49,7 @@ async function getStudents() {
 
 async function getSportklassen(){
   try {
-    const sporttagid = store.sporttag?.id
+    const sporttagid = sporttag.value.id
     const fetchurl = url + "/sportklassen/" + sporttagid 
     let response = await fetch(fetchurl)
     sportklassen.value = await response.json()
@@ -109,8 +115,9 @@ function getDisplayName(student: Student) {
       <div>
         <input v-model="prefix" placeholder="Vor- oder Nachnamen filtern" />
       </div>
-      <div>
-        <table class="table">
+      <div class="custom-scrollbar">
+        <table class="table table-striped table-hover">
+          <thead>
           <tr>
             <th>Vorname</th>
             <th>Nachname</th>
@@ -119,16 +126,21 @@ function getDisplayName(student: Student) {
             <th>Sportklasse</th>
             <th>Bearbeiten</th>
           </tr>
+        </thead>
+        <tbody>
           <tr v-for="s in filteredStudents" v-bind:key="s.id.toString">
             <td>{{ s.vorname }}</td>
             <td>{{ s.nachname }}</td>
             <td>{{ s.geschlecht }}</td>
-            <td type="date">{{ s.geburtsdatum }}</td>
+            <!--td>{{ formatDate(s.geburtsdatum) }}</td-->
+            <td>{{ formatDate(s.geburtsdatum) }}</td>
             <td>{{ s.sportklasse }}</td>
-            <td><button @click="edit(s)" type="button" class="btn btn-primary" data-bs-toggle="modal"
-                data-bs-target="#studentEditModal">Bearbeiten</button><button type="button" class="btn btn-danger"
-                @click="del(s.id)">Löschen</button></td>
+            <td><button @click="edit(s)" type="button" class="btn btn-link" data-bs-toggle="modal"
+                data-bs-target="#studentEditModal"><i class="bi bi-pencil-square" style="color: green"></i></button>
+                <button type="button" class="btn btn-link"
+                @click="del(s.id)"><i class="bi bi-trash" style="color: red"></i></button></td>
           </tr>
+        </tbody>
         </table>
       </div>
     </div>
@@ -137,4 +149,10 @@ function getDisplayName(student: Student) {
   <StudentEdit :student="student" :sportklassen="sportklassen" @save-student="saveStudent" />
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.custom-scrollbar {
+position: relative;
+height: max-content;
+overflow: auto;
+}
+</style>
