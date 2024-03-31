@@ -75,8 +75,8 @@ function handleSave() {
             <option>w</option>
             <option>a</option>
           </select></label>
-          <label>Sportklasse: <select v-model="studentEdit.sportklassenId">
-            <option v-for="s in props.sportklassen" v-bind:key="s.id" :value="s.id">{{ s.klassenname }}</option>
+          <label>Sportklasse: <select v-model="studentEdit.sportklasse">
+            <option v-for="s in props.sportklassen" v-bind:key="s.id" :value="s.klassenname">{{ s.klassenname }}</option>
           </select></label>
       </div>
       </div>

@@ -11,21 +11,13 @@ const sporttage: Ref<Sporttag[]> = ref([])
 
 //methods
 async function getSporttage() {
-    var req = new XMLHttpRequest();
-    req.open('GET', url + '/sporttag', true);
-    req.setRequestHeader('Accept', 'application/json');
-    req.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('token'));
-
-    req.onreadystatechange = function () {
-        if (req.readyState == 4) {
-            if (req.status == 200) {
-                  sporttage.value = JSON.parse(req.response) as Sporttag[]
-            } else if (req.status == 403) {
-                alert('Forbidden');
-            }
-        }
-    }
-    req.send();
+  try {
+    let response = await fetch(url + "/sporttag")
+    sporttage.value = await response.json() as Sporttag[]
+    console.log(sporttage.value)
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 //lifecycle hooks

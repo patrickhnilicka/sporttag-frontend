@@ -2,13 +2,12 @@ import type Sporttag from '@/types/Sporttag'
 import { defineStore } from 'pinia'
 import {ref, type Ref} from 'vue';
 
-export const useSporttagStore = defineStore('sporttag', () => {
+export const useSporttagStore = defineStore('sporttag', ()=> {
     const sporttag : Ref<Sporttag> = ref({id: 0, datum: new Date(), bezeichnung: ''})
 
     function loadSporttag() {
       try {
-        console.log(localStorage.getItem('token'))
-        return fetch('http://127.0.0.1:8081' + "/currentsporttag", { 'Authorization': 'Bearer ' + localStorage.getItem('token'),'Accept': 'application/json' })
+        return fetch('http://127.0.0.1:8080' + "/currentsporttag")
         .then(response => response.json())
         .then(data => {
           sporttag.value = data
@@ -22,5 +21,5 @@ export const useSporttagStore = defineStore('sporttag', () => {
       }
     }
     loadSporttag()
-    return {sporttag}
+    return {sporttag, loadSporttag}
   })
