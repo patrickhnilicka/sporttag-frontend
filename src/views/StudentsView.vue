@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import type Student from '@/types/Student';
 import StudentEdit from '../components/StudentEdit.vue';
-import { computed, ref, watch, onMounted, type Ref , inject} from 'vue'
+import { computed, ref, watch, onMounted, type Ref } from 'vue'
 import { useSporttagStore } from '@/stores/sporttag';
 import type Sportklasse from "@/types/Sportklasse";
-import { storeToRefs } from 'pinia'
-import { datereviver, formatDate } from '@/js/utils'
+import { storeToRefs } from 'pinia';
+import { formatDate } from '@/js/utils';
+import * as services from '@/services/services';
 
-const url = inject('backendurl');
 
 // data
 const students: Ref<Student[]> = ref([])
 const prefix = ref('')
-const student: Ref<Student> = ref({ id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '', sportklassenId: 0, sportlehrerKuerzel: '' })
+const student: Ref<Student> = ref({ id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: '', klasse: '', sportklasse: '', sportklassenId: 0, sportlehrerKuerzel: '' } as Student);
 const { sporttag } = storeToRefs(useSporttagStore())
 const sportklassen: Ref<Sportklasse[]> = ref([])
 
@@ -31,81 +31,40 @@ onMounted(() => {
 
 //methods
 async function getStudents() {
-  if(sporttag.value.id == undefined) {
-      return
-    }
-  try {
-    const sporttagid = sporttag.value.id
-    console.log("getStudents():" + sporttag.value.bezeichnung)
-    const fetchurl = url + "/students/" + sporttagid 
-    let response = await fetch(fetchurl)
-    let newstudents = await response.json()
-    students.value = newstudents
-    console.log(newstudents)
-  } catch (error) {
-    console.log(error)
+  const sporttagid = sporttag.value.id;
+  if(sporttagid == undefined) {
+      return;
   }
+  services.getStudents(sporttagid, (newstuds:Student[]) => {
+    students.value = newstuds;
+  });
 }
 
 async function getSportklassen(){
-  try {
-    const sporttagid = sporttag.value.id
-    const fetchurl = url + "/sportklassen/" + sporttagid 
-    let response = await fetch(fetchurl)
-    sportklassen.value = await response.json()
-    console.log(students)
-  } catch (error) {
-    console.log(error)
+  const sporttagid = sporttag.value.id;
+  if(sporttagid == undefined) {
+      return;
   }
+  services.getSportklassen(sporttagid, (sportkl:Sportklasse[])=>{
+    sportklassen.value = sportkl;
+  })
 }
 
 async function saveStudent(student: Student) {
-  try {
-    await fetch(url + "/student", {
-      method: "POST",
-      body: JSON.stringify(student),
-      headers: {
-        "Content-Type": "application/json",
-        // 'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    })
-    getStudents()
-  }
-  catch (error) {
-    console.log(error)
-  }
+  services.saveStudent(student, getStudents);
 }
 
-function create() {
-  student.value = { id: -1, vorname: '', nachname: '', geschlecht: '', geburtsdatum: new Date(), klasse: '', sportklasse: '', sportklassenId: 0, sportlehrerKuerzel: '' }
-}
-
-function edit(studentEdit: Student) {
+function editStudent(studentEdit: Student) {
   console.log("edit")
   getSportklassen()
   student.value = studentEdit
 }
 
-async function del(id: Number) {
-  try {
-    await fetch(url + "/student/" + id, {
-      method: "DELETE",
-    })
+async function deleteStudent(id: number | undefined) {
+  if(id == undefined){
+    return;
   }
-  catch (error) {
-    console.log(error)
-  }
-  getStudents()
-}
-
-function updateStudent(uStudent: Student) {
-  console.log("Update Student:")
-  console.log(uStudent)
-  saveStudent(uStudent)
-}
-
-function getDisplayName(student: Student) {
-  return student.vorname + ' ' + student.nachname
+  services.deleteStudent(id, getStudents);
 }
 </script>
 
@@ -132,13 +91,12 @@ function getDisplayName(student: Student) {
             <td>{{ s.vorname }}</td>
             <td>{{ s.nachname }}</td>
             <td>{{ s.geschlecht }}</td>
-            <!--td>{{ formatDate(s.geburtsdatum) }}</td-->
             <td>{{ formatDate(s.geburtsdatum) }}</td>
             <td>{{ s.sportklasse }}</td>
-            <td><button @click="edit(s)" type="button" class="btn btn-link" data-bs-toggle="modal"
+            <td><button @click="editStudent(s)" type="button" class="btn btn-link" data-bs-toggle="modal"
                 data-bs-target="#studentEditModal"><i class="bi bi-pencil-square" style="color: green"></i></button>
                 <button type="button" class="btn btn-link"
-                @click="del(s.id)"><i class="bi bi-trash" style="color: red"></i></button></td>
+                @click="deleteStudent(s.id)"><i class="bi bi-trash" style="color: red"></i></button></td>
           </tr>
         </tbody>
         </table>
