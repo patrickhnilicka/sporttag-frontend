@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import AboutView from '../views/AboutView.vue'
 import StudentsView from '../views/StudentsView.vue'
 import SettingView from '@/views/SettingView.vue'
+import RiegenZuteilungView from '@/views/RiegenZuteilungView.vue'
 
 
 const router = createRouter({
@@ -17,6 +17,11 @@ const router = createRouter({
       path: '/students',
       name: 'students',
       component: StudentsView
+    },
+    {
+      path: '/riegenzuteilung',
+      name: 'riegenzuteilung',
+      component: RiegenZuteilungView
     },
     {
       path: '/settings',

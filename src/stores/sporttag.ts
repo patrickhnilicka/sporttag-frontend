@@ -1,4 +1,4 @@
-import type Sporttag from '@/types/Sporttag'
+import type Sporttag from '@/customtypes/Sporttag'
 import { defineStore } from 'pinia'
 import {ref, type Ref} from 'vue';
 import { getCurrentSporttag } from '@/services/services';

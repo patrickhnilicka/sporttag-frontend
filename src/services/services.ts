@@ -1,7 +1,9 @@
-import {authenticateddeletereq, authenticatedgetreq, authenticatedpostreq } from '@/services/authenticationservice';
-import type Sportklasse from '@/types/Sportklasse';
-import type Sporttag from '@/types/Sporttag';
-import type Student from '@/types/Student';
+import {authenticateddeletereq, authenticatedgetreq, authenticatedpostreq, authenticatedpostfilereq } from '@/services/authenticationservice';
+import type Riegenzuteilung from '@/customtypes/Riegenzuteilung';
+import type Sportklasse from '@/customtypes/Sportklasse';
+import type Sporttag from '@/customtypes/Sporttag';
+import type Student from '@/customtypes/Student';
+import type Riege from '@/customtypes/Riege';
 
 export function getSporttage(func: (sporttage: Sporttag[]) => void) {
     const authreq = authenticatedgetreq('sporttag');
@@ -87,4 +89,60 @@ export function getCurrentSporttag(func: (sporttag:Sporttag) => void){
         }
     }
     authreq.send();
+}
+
+export function uploadExcel(file: File, sporttagid: String, func: () => void){
+    const authreq = authenticatedpostfilereq('studentsFromExcel');
+    const fileData = new FormData();
+    fileData.append("file", file);
+    fileData.append("sporttagid", sporttagid.toString());
+
+    authreq.send(fileData);
+    authreq.onreadystatechange = function () {
+        if (authreq.readyState == 4){
+            func();
+        }
+    }
+}
+
+export function getRiegenzuteilungen(sporttagid:number, func: (riegezuteilungs:Riegenzuteilung[]) => void){
+    const authreq = authenticatedgetreq('riegenzuteilung/' + sporttagid);
+    authreq.onreadystatechange = function () {
+        if (authreq.readyState == 4) {
+            if (authreq.status == 200) {
+                func(JSON.parse(authreq.response) as Riegenzuteilung[]);
+            } else if (authreq.status == 403) {
+                alert('Forbidden');
+                return null;
+            }
+        }
+    }
+    authreq.send();
+}
+
+export function getRieges(sporttagid:number, func: (riege: Riege[]) => void){
+    const authreq = authenticatedgetreq('riege/' + sporttagid);
+    authreq.onreadystatechange = function () {
+        if (authreq.readyState == 4) {
+            if (authreq.status == 200) {
+                func(JSON.parse(authreq.response) as Riege[]);
+            } else if (authreq.status == 403) {
+                alert('Forbidden');
+                return null;
+            }
+        }
+    }
+    authreq.send();
+}
+
+export function saveRiegenzuteilung(riegenzuteilung: Riegenzuteilung, sporttagId: number, func: () => void){
+    console.log("Speichere Riegenzuteilung..")
+    const authreq = authenticatedpostreq('riegenzuteilung');
+    authreq.send(JSON.stringify({studentId: riegenzuteilung.studentId, riegeId: riegenzuteilung.riegeId, sporttagId: sporttagId}));
+    authreq.onreadystatechange = function () {
+        if (authreq.readyState == 4){
+            console.log("Speichern erfolgreich.")
+            func();
+        }
+    }
 }

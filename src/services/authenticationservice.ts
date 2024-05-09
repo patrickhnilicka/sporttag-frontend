@@ -1,4 +1,4 @@
-const url = 'http://127.0.0.1:8081';
+const url = 'http://127.0.0.1:8081/api/v1';
 
 export function authenticatedgetreq(smethod:string) : XMLHttpRequest{
     const req = new XMLHttpRequest();
@@ -12,6 +12,13 @@ export function authenticatedpostreq(smethod:string) : XMLHttpRequest{
     const req = new XMLHttpRequest();
     req.open('POST', url + '/' + smethod, true);
     req.setRequestHeader('Content-Type', 'application/json');
+    req.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('token'));
+    return req;
+}
+
+export function authenticatedpostfilereq(smethod:string) : XMLHttpRequest{
+    const req = new XMLHttpRequest();
+    req.open('POST', url + '/' + smethod, true);
     req.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('token'));
     return req;
 }

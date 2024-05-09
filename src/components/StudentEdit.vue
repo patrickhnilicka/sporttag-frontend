@@ -1,28 +1,14 @@
 <script setup lang="ts">
-import type Sportklasse from '@/types/Sportklasse';
-import type Student from '@/types/Student';
-import { withDefaults, ref, watch, toRaw} from 'vue'
+import type Sportklasse from '@/customtypes/Sportklasse'
+import type Student from '@/customtypes/Student';
+import { ref, watch, toRaw} from 'vue'
 
 export interface Props {
-  student?: Student,
-  show?: boolean,
-  sportklassen?: Sportklasse[]
+  student: Student,
+  show: boolean,
+  sportklassen: Sportklasse[]
 }
 
-/*const props = withDefaults(defineProps<Props>(), {
-  student: () => { // has to be defined by factory function
-    return {id: undefined,
-    vorname: '',
-    nachname: '',
-    geschlecht: '',
-    geburtsdatum: undefined,
-    klasse: '',
-    sportklasse: '',
-    sportklassenId: undefined,
-    sportlehrerKuerzel: ''}
-  },
-  show: true
-})*/
 const props = defineProps<Props>()
 
 const emit = defineEmits({
@@ -48,9 +34,9 @@ function logstudent() {
     }
 
 function handleSave() {
-      console.log("Updating..")
-      emit("saveStudent", studentEdit.value)
-      emit("abortEdit")
+      console.log("Updating..");
+      emit("saveStudent", studentEdit.value);
+      emit("abortEdit");
     }
 </script>
 

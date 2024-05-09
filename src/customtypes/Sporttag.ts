@@ -1,5 +1,5 @@
 export default interface Sporttag {
-    id?: number;
+    id: number;
     datum: Date;
     bezeichnung: string;
 }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import type Sporttag from '@/types/Sporttag';
+import  type Sporttag  from '@/customtypes/Sporttag';
 import { computed, ref, watch, onBeforeMount, type Ref , inject} from 'vue'
 import { useSporttagStore } from '@/stores/sporttag';
 import { getSporttage } from '../services/services';
