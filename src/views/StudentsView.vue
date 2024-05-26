@@ -76,9 +76,8 @@ function uploadExcel(file: File) {
 </script>
 
 <template>
-  <div class="container-xxl">
-    <div class="table-responsive">
-      <div class="table-wrapper">
+  <!-- <div class="container-xxl"> -->
+    <!-- <div class="table-responsive"> -->
         <div class="table-title">
           <div class="row">
             <div class="col-6">
@@ -90,6 +89,7 @@ function uploadExcel(file: File) {
             </div>
           </div>
         </div>
+        <div class="tableFixHead">
         <table class="table table-striped table-hover">
           <thead>
             <tr>
@@ -117,17 +117,15 @@ function uploadExcel(file: File) {
           </tbody>
         </table>
       </div>
-    </div>
-  </div>
+    <!-- </div> -->
+  <!-- </div> -->
 
   <StudentEdit :student="student" :sportklassen="sportklassen" @save-student="saveStudent" />
   <StudentExcelImport :sporttagid="sporttag.id" @upload-excel="uploadExcel" />
 </template>
 
 <style lang="scss" scoped>
-.custom-scrollbar {
-  position: relative;
-  height: max-content;
-  overflow: auto;
-}
+.tableFixHead          { overflow: auto; height: 95%; }
+.tableFixHead thead th { position: sticky; top: 0; z-index: 1; }
+
 </style>

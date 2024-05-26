@@ -146,3 +146,18 @@ export function saveRiegenzuteilung(riegenzuteilung: Riegenzuteilung, sporttagId
         }
     }
 }
+
+export function getRiegenExcel(sporttagId: number, func: () => void){
+    const authreq = authenticatedgetreq('riegenExcel/' + sporttagId);
+    authreq.onreadystatechange = function () {
+        if (authreq.readyState == 4) {
+            if (authreq.status == 200) {
+                func();
+            } else if (authreq.status == 403) {
+                alert('Forbidden');
+                return null;
+            }
+        }
+    }
+    authreq.send();
+}

@@ -1,0 +1,11 @@
+docker build . -t sporttag-frontend (at project root)
+docker login (paedehn)
+docker push paedehn/sporttag
+
+
+test locally:
+docker run -d -p 80:5173 sporttag-frontend
+
+
+pull:
+docker pull paedehn/sporttag

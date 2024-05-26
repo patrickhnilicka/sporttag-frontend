@@ -2,16 +2,19 @@
 import { RouterLink, RouterView } from 'vue-router'
 import NavView from './views/partials/NavView.vue';
 import { useSporttagStore } from './stores/sporttag';
+import { logout } from './services/logoutservice';
 
 const sporttag = useSporttagStore()
+const env = import.meta.env.VITE_ENVIRONMENT
+
 </script>
 
 <template>
   <!--div id="app"-->
-    <header><div id="header">{{sporttag.sporttag?.bezeichnung}}</div></header>
+    <header><div id="header">{{sporttag.sporttag?.bezeichnung}}</div></header><button id="logoutbutton" @click="logout()" class="btn btn-danger">Logout</button>
     <NavView />
     <div id="content"><router-view/></div>
-    <footer><div id="footer">footer</div></footer>
+    <footer><div id="footer">{{env}}</div></footer>
   <!--/div-->
 </template>
 
@@ -29,6 +32,11 @@ const sporttag = useSporttagStore()
     height: 100px;
     font-size: 4em;
   }
+  #logoutbutton {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+  }
   #content {
     position: absolute;
     left: 210px;
@@ -45,7 +53,8 @@ const sporttag = useSporttagStore()
   }
   footer{
     position: absolute;
-    bottom: 0;
+    bottom: 20px;
+
   }
 </style>
 

@@ -1,4 +1,4 @@
-const url = 'http://127.0.0.1:8081/api/v1';
+const url = import.meta.env.VITE_BACKEND_URL;
 
 export function authenticatedgetreq(smethod:string) : XMLHttpRequest{
     const req = new XMLHttpRequest();
